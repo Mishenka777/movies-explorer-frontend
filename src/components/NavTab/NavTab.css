@@ -1,0 +1,37 @@
+.nav-tab {
+  height: 66px;
+  background: #272727;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration-line: underline;
+}
+
+.nav-tab__button {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 123%;
+  color: white;
+}
+
+.nav-tab__button:nth-child(2) {
+  margin: 0 40px;
+}
+
+.nav-tab__button:hover {
+  opacity: 0.6;
+  transition: opacity linear 0.5s;
+}
+
+@media screen and (max-width: 525px) {
+  .nav-tab__button:nth-child(2) {
+    margin: 0 24px;
+  }
+
+  .nav-tab__button {
+    font-size: 11px;
+    line-height: 16px;
+  }
+}
