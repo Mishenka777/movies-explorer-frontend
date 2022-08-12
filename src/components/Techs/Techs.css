@@ -98,6 +98,7 @@
 
 @media screen and (max-width: 525px) {
   .techs {
+    background: #202020;
     padding: 60px 18px;
     height: 520px;
   }

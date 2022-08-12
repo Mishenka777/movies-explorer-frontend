@@ -41,3 +41,7 @@
   opacity: 0.6;
   transition: opacity linear 0.5s;
 }
+
+.search-form__entry:focus {
+  border: solid 1.5px #4285f4;
+}
