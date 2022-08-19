@@ -1,0 +1,124 @@
+.login {
+  margin: auto;
+  width: 396px;
+}
+
+.login__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.login__title {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 24px;
+  line-height: 29px;
+  margin: 40px 0;
+}
+
+.login__form-item {
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 12px;
+  color: #8b8b8b;
+  margin-bottom: 10px;
+}
+
+.login__error {
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 12px;
+  color: #ee3465;
+  min-height: 12px;
+  margin-top: 8px;
+}
+
+.login__error:last-of-type {
+  margin: 10px 0 157px;
+}
+
+.login__input {
+  height: 46px;
+  background: #2f2f2f;
+  border-radius: 8px;
+  padding: 0 0 0 15px;
+  border: none;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  color: #ffffff;
+  outline: none;
+}
+
+.login__form-button {
+  background: #4285f4;
+  border-radius: 3px;
+  border: none;
+  height: 45px;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0;
+}
+
+.login__text {
+  text-align: center;
+  margin: 16px 0 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: #8b8b8b;
+}
+
+.login__link {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 17px;
+  text-align: center;
+  color: #4285f4;
+  text-decoration: none;
+  cursor: pointer;
+  margin-left: 6px;
+}
+
+.login__link:hover {
+  opacity: 0.6;
+  transition: opacity linear 0.5s;
+}
+
+.login__form-button:hover {
+  opacity: 0.6;
+  transition: opacity linear 0.5s;
+}
+
+@media screen and (max-width: 525px) {
+  .login__form-button {
+    margin-top: 245px;
+    font-size: 12px;
+    line-height: 15px;
+  }
+
+  .login {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 56px 30px 30px;
+    width: calc(100% - 60px);
+  }
+
+  .login__form {
+    width: 100%;
+    min-height: 468px;
+  }
+
+  .login__title {
+    margin: 50px 0 80px;
+  }
+
+  .login__error:last-of-type {
+    margin-bottom: 0;
+  }
+}
