@@ -1,4 +1,5 @@
 .movies-card {
+  background-color: #222222;
   display: flex;
   flex-direction: column;
 }
@@ -27,6 +28,7 @@
 
 .movies-card__image {
   width: 100%;
+  height: 200px;
 }
 
 .movies-card__button {
@@ -61,6 +63,7 @@
   .movies-card__image {
     max-width: 342px;
     width: 100%;
+    height: 190px;
   }
 }
 
@@ -68,6 +71,7 @@
   .movies-card__image {
     max-width: 300px;
     width: 100%;
+    height: 168px;
   }
 
   .movies-card__duration {
