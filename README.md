@@ -1,3 +1,3 @@
-# Проект - (https://vasiliustop.github.io/russian-travel)
+# Проект - (https://mishenkadiplom.nomoredomains.xyz)
 ***
-## Пул реквест - (https://vasiliustop.github.io/russian-travel)
+## Пул реквест - (https://github.com/Mishenka777/movies-explorer-frontend/pull/2)
