@@ -30,7 +30,7 @@ export default function MoviesCard({
     <li className="movies-card" key={movie.id}>
       <div className="movies-card__items">
         <h2 className="movies-card__title">{movie.nameRU}</h2>
-        <p className="movies-card__duration">{movie.duration}</p>
+        <p className="movies-card__duration">{movie.duration} минут</p>
       </div>
       <a href={movie.trailerLink} target="_blank" rel="noreferrer">
         {location === "/movies" ? (

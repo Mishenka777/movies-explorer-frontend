@@ -1,8 +1,7 @@
 const API_URL = "https://api.mishenkadiplom.nomoredomains.xyz";
 const MOVIES_URL = "https://api.nomoreparties.co";
-const token = localStorage.getItem('token');
 
-export const updateUserData = (name, email) => {
+export const updateUserData = (token, name, email) => {
   return fetch(`${API_URL}/users/me`, {
     method: "PATCH",
     headers: {
@@ -54,14 +53,7 @@ export const checkToken = (token) => {
     .then((response) => response);
 };
 
-const checkResponse = (response) => {
-  if (response.ok) {
-    return response.json();
-  }
-  return Promise.reject(`Ошибка: ${response.status}`);
-};
-
-export const saveMovie = (movie) => {
+export const saveMovie = (token, movie) => {
   return fetch(`${API_URL}/movies`, {
       method: "POST",
       headers: {
@@ -85,8 +77,7 @@ export const saveMovie = (movie) => {
     }).then(checkResponse);
 };
 
-//удаление фильма
-export const deleteMovie = (_id) => {
+export const deleteMovie = (token, _id) => {
   return fetch(`${API_URL}/movies/${_id}`, {
       method: "DELETE",
       headers: {
@@ -97,8 +88,7 @@ export const deleteMovie = (_id) => {
     }).then(checkResponse);
 };
 
-//получили фильмы
-export const getSavedMovies = () => {
+export const getSavedMovies = (token) => {
   return fetch(`${API_URL}/movies`, {
       method: "GET",
       headers: {
@@ -107,4 +97,11 @@ export const getSavedMovies = () => {
           Authorization: `Bearer ${token}`,
       },
     }).then(checkResponse);
+};
+
+const checkResponse = (response) => {
+  if (response.ok) {
+    return response.json();
+  }
+  return Promise.reject(`Ошибка: ${response.status}`);
 };

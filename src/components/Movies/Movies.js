@@ -13,9 +13,14 @@ export default function Movies({onShortMovies, isShortMovies, onSearchMovies, lo
     setVisibleMoviesCount((prevCount) => prevCount + getLoadMovies(width));
   }
 
+  function defaultVisibleCount() {
+    setVisibleMoviesCount(getInitialMovies(width))
+  }
+
   return (
     <section className="movies">
       <SearchForm
+        defaultVisibleCount={defaultVisibleCount}
         searchValue={searchValue}
         onSearchMovies={onSearchMovies}
         onShortMovies={onShortMovies}
@@ -27,7 +32,6 @@ export default function Movies({onShortMovies, isShortMovies, onSearchMovies, lo
           onAddMovie={onAddMovie}
           onDeleteMovie={onDeleteMovie}
           userSavedMovies={userSavedMovies}
-          isSaved={false}
           visibleMoviesCount={visibleMoviesCount}
         />
       {visibleMoviesCount < movies.length && (

@@ -8,6 +8,7 @@ export default function SearchForm({
   onSearchMovies,
   onSearchSavedMovies,
   searchValue,
+  defaultVisibleCount,
 }) {
   const [search, setSearch] = useState("");
   const [searchSaved, setSearchSaved] = useState("");
@@ -21,27 +22,31 @@ export default function SearchForm({
   function onSubmitSavedMovies(e) {
     e.preventDefault();
     onSearchSavedMovies(searchSaved);
+    localStorage.setItem("keywordSaved", searchSaved);
   }
 
   function onSubmit(e) {
     e.preventDefault();
     localStorage.setItem("keyword", search);
     onSearchMovies(search);
+    defaultVisibleCount();
   }
 
   useEffect(() => {
     setSearch(localStorage.getItem("keyword"));
+    setSearchSaved(localStorage.getItem("keywordSaved"));
   }, []);
 
   return (
     <form
       className="search-form"
       onSubmit={location === "/movies" ? onSubmit : onSubmitSavedMovies}
-      noValidate
     >
       <input
         className="search-form__entry"
-        placeholder={searchValue?.keyword || "Фильм"}
+        placeholder="Фильм"
+        defaultValue={searchValue?.keyword}
+        minLength="1"
         required
         type="text"
         onChange={handleChange}

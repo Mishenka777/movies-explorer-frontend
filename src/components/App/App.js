@@ -30,9 +30,12 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState({});
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isShortMovies, setIsShortMovies] = useState(false);
+  const [isShortSaveMovies, setIsShortSaveMovies] = useState(false);
   const [searchValue, setSearchValue] = useState({});
   const [infoMessage, setInfoMessage] = useState("");
   const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false);
+  const [filtredMovies, setFilteredMovies] = useState([]);
+  const [searchSaveValue, setSearchSaveValue] = useState([]);
 
   useEffect(() => {
     checkToken();
@@ -42,11 +45,22 @@ export default function App() {
     const localSearchMovies = localStorage.getItem("foundMovies");
     const localSearchValue = localStorage.getItem("searchValue");
     const localShotMovies = localStorage.getItem("isShortMovies");
+    const localMovies = localStorage.getItem("movies");
 
-    if (localSearchValue && localSearchMovies && localShotMovies) {
-      setMovies(JSON.parse(localSearchMovies));
+    if (
+      localSearchValue &&
+      localSearchMovies &&
+      localShotMovies &&
+      localMovies
+    ) {
+      setFilteredMovies(JSON.parse(localSearchMovies));
       setSearchValue(JSON.parse(localSearchValue));
       setIsShortMovies(JSON.parse(localShotMovies));
+      setMovies(JSON.parse(localMovies));
+    }
+    const localSaveSearchValue = localStorage.getItem("searchSaveValue");
+    if (localSaveSearchValue) {
+      setSearchSaveValue(JSON.parse(localSearchValue));
     }
   }, []);
 
@@ -104,35 +118,110 @@ export default function App() {
   }
 
   function handleUpdateUser(currentUser) {
-    mainApi.updateUserData(currentUser.name, currentUser.email)
-    .then((res) => {
-      setInfoMessage("Данные успешно обновлены");
-      setIsInfoTooltipPopupOpen(true);
-      setCurrentUser({
-        name: res.name,
-        email: res.email,
-      });
-    })
-    .catch((err) => {
-      setIsInfoTooltipPopupOpen(true);
-      setInfoMessage("Некорректные данные");
-    });
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      mainApi
+        .updateUserData(token, currentUser.name, currentUser.email)
+        .then((res) => {
+          setInfoMessage("Данные успешно обновлены");
+          setIsInfoTooltipPopupOpen(true);
+          setCurrentUser({
+            name: res.name,
+            email: res.email,
+          });
+        })
+        .catch((err) => {
+          setIsInfoTooltipPopupOpen(true);
+          setInfoMessage("Некорректные данные");
+        });
+    }
   }
 
   function handleShortMovies(e) {
     setIsShortMovies(e.target.checked);
+    const searchResult = handleSearchMoviesByKeyword(
+      movies,
+      searchValue?.keyword,
+      e.target.checked
+    );
+    console.log(searchValue?.keyword);
+    if (movies.length !== 0) {
+      if (searchResult.length === 0) {
+        setFilteredMovies([]);
+        setInfoMessage("Ничего не найдено!");
+        setIsInfoTooltipPopupOpen(true);
+      } else {
+        setFilteredMovies(searchResult);
+      }
+    }
+  }
+
+  function handleShortSaveMovies(e) {
+    setIsShortSaveMovies(e.target.checked);
+  }
+
+  function handleSearchMoviesByKeyword(movies, keyword, short) {
+    let foundMovies = [];
+    movies.forEach((movie) => {
+      if (movie.nameRU.toLowerCase().indexOf(keyword) > -1) {
+        if (short) {
+          movie.duration <= 40 && foundMovies.push(movie);
+        } else {
+          foundMovies.push(movie);
+        }
+      }
+    });
+    return foundMovies;
+  }
+
+  function handleSearchSavedMovies(keyword) {
+    setLoading(true);
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      mainApi
+        .getSavedMovies(token)
+        .then((res) => {
+          setSavedMovies(res);
+          const searchResult = handleSearchMoviesByKeyword(
+            res,
+            keyword,
+            isShortSaveMovies
+          );
+          if (searchResult.length === 0) {
+            setSavedMovies([]);
+            setInfoMessage("Ничего не найдено!");
+            setIsInfoTooltipPopupOpen(true);
+          } else {
+            setSavedMovies(searchResult);
+            setSearchSaveValue({ ...searchSaveValue, keyword: keyword });
+            localStorage.setItem(
+              "searchSaveValue",
+              JSON.stringify({ keyword })
+            );
+          }
+        })
+        .catch(() => {
+          setSavedMovies([]);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }
   }
 
   const handleSaveMovie = (movie) => {
-    mainApi
-      .saveMovie(movie)
-      .then((newMovie) => {
-        setSavedMovies([newMovie, ...savedMovies]);
-      })
-      .catch((err) => {
-        setInfoMessage(`${err}`);
-        setIsInfoTooltipPopupOpen(true);
-      });
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      mainApi
+        .saveMovie(token, movie)
+        .then((newMovie) => {
+          setSavedMovies([newMovie, ...savedMovies]);
+        })
+        .catch((err) => {
+          setInfoMessage(`${err}`);
+          setIsInfoTooltipPopupOpen(true);
+        });
+    }
   };
 
   function handleLogOut() {
@@ -145,20 +234,6 @@ export default function App() {
     history.push("/");
   }
 
-  function handleSearchMoviesByKeyword(movies, keyword) {
-    let foundMovies = [];
-    movies.forEach((movie) => {
-      if (movie.nameRU.toLowerCase().indexOf(keyword) > -1) {
-        if (isShortMovies) {
-          movie.duration <= 40 && foundMovies.push(movie);
-        } else {
-          foundMovies.push(movie);
-        }
-      }
-    });
-    return foundMovies;
-  }
-
   function handleSearchMovies(keyword) {
     setLoading(true);
     setMovies([]);
@@ -166,69 +241,55 @@ export default function App() {
       .getInitialMovies()
       .then((res) => {
         setMovies(res);
-        const searchResult = handleSearchMoviesByKeyword(res, keyword);
+        const searchResult = handleSearchMoviesByKeyword(
+          res,
+          keyword,
+          isShortMovies
+        );
         if (searchResult.length === 0) {
-          setMovies([]);
+          setFilteredMovies([]);
           setInfoMessage("Ничего не найдено!");
           setIsInfoTooltipPopupOpen(true);
         } else {
           localStorage.setItem("foundMovies", JSON.stringify(searchResult));
+          setFilteredMovies(JSON.parse(localStorage.getItem("foundMovies")));
           setSearchValue({ ...searchValue, keyword: keyword });
           localStorage.setItem("searchValue", JSON.stringify({ keyword }));
-          setMovies(JSON.parse(localStorage.getItem("foundMovies")));
           localStorage.setItem("isShortMovies", JSON.stringify(isShortMovies));
+          localStorage.setItem("movies", JSON.stringify(res));
+          setMovies(JSON.parse(localStorage.getItem("movies")));
         }
       })
       .catch(() => {
         setMovies([]);
-      })
-    .finally(() => {
-        setLoading(false);
-    });
-  }
-
-  function handleSearchSavedMovies(keyword) {
-    setLoading(true);
-    mainApi
-      .getSavedMovies()
-      .then((savedMovies) => {
-        setSavedMovies(savedMovies);
-        const searchResult = handleSearchMoviesByKeyword(savedMovies, keyword);
-        if (searchResult.length === 0) {
-          setSavedMovies([]);
-          setInfoMessage("Ничего не найдено!");
-          setIsInfoTooltipPopupOpen(true);
-        } else {
-          setSavedMovies(searchResult);
-        }
-      })
-      .catch(() => {
-        setSavedMovies([]);
       })
       .finally(() => {
         setLoading(false);
       });
   }
 
-
   function handleDeleteMovie(movie) {
-    mainApi
-      .deleteMovie(movie._id)
-      .then(() => {
-        setSavedMovies((savedMovies) =>
-          savedMovies.filter((item) => item !== movie)
-        );
-      })
-      .catch((err) => {
-        setInfoMessage(`${err}`);
-        setIsInfoTooltipPopupOpen(true);
-      });
+    if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
+      mainApi
+        .deleteMovie(token, movie._id)
+        .then(() => {
+          setSavedMovies((savedMovies) =>
+            savedMovies.filter((item) => item !== movie)
+          );
+        })
+        .catch((err) => {
+          setInfoMessage(`${err}`);
+          setIsInfoTooltipPopupOpen(true);
+        });
+    }
   }
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
+      const token = localStorage.getItem("token");
       mainApi
-        .getSavedMovies()
+        .getSavedMovies(token)
         .then((savedMovies) => {
           setSavedMovies(savedMovies);
         })
@@ -288,7 +349,7 @@ export default function App() {
             <Movies
               onAddMovie={handleSaveMovie}
               searchValue={searchValue}
-              movies={movies}
+              movies={filtredMovies}
               onDeleteMovie={handleDeleteMovie}
               loading={loading}
               onShortMovies={handleShortMovies}
@@ -303,11 +364,13 @@ export default function App() {
             <SaveMovies
               loggedIn={isLoggedIn}
               loading={loading}
-              movies={movies}
+              movies={filtredMovies}
               userSavedMovies={savedMovies}
               onDeleteMovie={handleDeleteMovie}
               onSearchSavedMovies={handleSearchSavedMovies}
-              onShortMovies={handleShortMovies}
+              onShortMovies={handleShortSaveMovies}
+              searchValue={searchSaveValue}
+              isShortMovies={isShortSaveMovies}
             />
             <Footer />
           </ProtectedRoute>
@@ -316,9 +379,9 @@ export default function App() {
           </Route>
         </Switch>
         <InfoTooltip
-              infoMessage={infoMessage}
-              isOpen={isInfoTooltipPopupOpen}
-              onClose={closeAllPopups}
+          infoMessage={infoMessage}
+          isOpen={isInfoTooltipPopupOpen}
+          onClose={closeAllPopups}
         />
       </div>
     </CurrentUserContext.Provider>

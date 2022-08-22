@@ -1,9 +1,28 @@
 import Logo from "../Logo/Logo";
 import { Link } from "react-router-dom";
-import { useFormWithValidation } from "../../utils/Validation";
+import useFormWithValidation from "../../utils/ValidationProfile";
 
 export default function Login({ onLogin }) {
-  const { values, handleChange, errors, isValid } = useFormWithValidation();
+  const EmailReg = /^\S+@\S+\.\S+$/iu;
+
+  const { values, handleChange, errors, isValid, } = useFormWithValidation({
+    password: (value) => {
+      if (!value) {
+        return 'Необходимо заполнить это поле'
+      } else if (value.length < 8) {
+        return 'Минимальное количество символов - 8'
+      }
+      return '';
+    },
+    email: (value) => {
+      if (!value) {
+        return 'Необходимо заполнить это поле'
+      } else if (!EmailReg.test(value)) {
+        return 'Поле не соотвествует адресу электронной почты'
+      }
+      return '';
+    }
+  });
 
   const handleSubmit = (evt) => {
     evt.preventDefault();

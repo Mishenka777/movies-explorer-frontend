@@ -1,12 +1,36 @@
 import { useContext, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CurrentUserContext } from "../../contexts/CurrentUserContext";
-import { useFormWithValidation } from "../../utils/Validation";
+import useFormWithValidation from "../../utils/ValidationProfile";
 
 export default function Profile({ onLogOut, handleUpdateUser }) {
+  const EmailReg =
+  /^\S+@\S+\.\S+$/iu;
+  const NameReg = /^[a-zA-Zа-яА-Я]+$/ui
   const currentUser = useContext(CurrentUserContext);
   const { values, setValues, handleChange, errors, isValid } =
-    useFormWithValidation();
+    useFormWithValidation({
+      name: (value) => {
+        if (!value) {
+          return "Необходимо заполнить это поле";
+        } else if (value.length < 2) {
+          return "Минимальное количество символов - 2";
+        } else if (value.length > 31) {
+          return "Максимальное количество символов - 30";
+        } else if (!NameReg.test(value)) {
+          return "Используйте только кириллицу или латиницу !";
+        }
+        return "";
+      },
+      email: (value) => {
+        if (!value) {
+          return "Необходимо заполнить это поле";
+        } else if (!EmailReg.test(value)) {
+          return "Поле не адресу электронной почты";
+        }
+        return "";
+      },
+    });
   const [disabled, setDisabled] = useState(true);
 
   useEffect(() => {
@@ -61,7 +85,7 @@ export default function Profile({ onLogOut, handleUpdateUser }) {
         <span className="input__error_profile">{errors.email}</span>
         <button
           type="submit"
-          disabled={!isValid}
+          disabled={!isValid || disabled}
           className={`profile__submit ${
             isValid && !disabled ? "" : "profile__submit_disabled"
           }`}

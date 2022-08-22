@@ -14,8 +14,9 @@ export default function MoviesCardList({
 
   return (
     <ul className="movies-card-list">
-      <Preloader loading={loading} />
-      {location === "/movies" ? (
+      {loading ? (
+        <Preloader loading={loading} />
+      ) : location === "/movies" ? (
         <>
           {movies.slice(0, visibleMoviesCount).map((movie) => (
             <MoviesCard

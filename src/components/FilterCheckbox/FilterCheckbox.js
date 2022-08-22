@@ -5,7 +5,7 @@ function FilterCheckbox({ onShortMovies, isShortMovies}) {
         type="checkbox"
         className="filter-checkbox__input"
         onChange={onShortMovies}
-        defaultChecked={isShortMovies}      
+        checked={isShortMovies}      
       />
       <span className="filter-checkbox__visual"></span>
       Короткометражки

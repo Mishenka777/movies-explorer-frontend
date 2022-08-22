@@ -8,12 +8,17 @@ export default function SaveMovies({
   onSearchSavedMovies,
   onShortMovies,
   loading,
+  searchValue,
+  isShortMovies,
 }) {
   return (
     <section className="save-movies">
       <SearchForm
         onSearchSavedMovies={onSearchSavedMovies}
         onShortMovies={onShortMovies}
+        searchValue={searchValue}
+        isShortMovies={isShortMovies}
+        
       />
       <MoviesCardList
         userSavedMovies={userSavedMovies}
