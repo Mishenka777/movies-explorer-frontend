@@ -37,6 +37,7 @@ export default function App() {
   const [filtredMovies, setFilteredMovies] = useState([]);
   const [searchSaveValue, setSearchSaveValue] = useState([]);
 
+
   useEffect(() => {
     checkToken();
   }, []);
@@ -144,7 +145,6 @@ export default function App() {
       searchValue?.keyword,
       e.target.checked
     );
-    console.log(searchValue?.keyword);
     if (movies.length !== 0) {
       if (searchResult.length === 0) {
         setFilteredMovies([]);
@@ -157,7 +157,18 @@ export default function App() {
   }
 
   function handleShortSaveMovies(e) {
+    const savedMovies = JSON.parse(localStorage.getItem("savedMovies"));
     setIsShortSaveMovies(e.target.checked);
+    if (e.target.checked) {
+      const searchResult = handleSearchMoviesByKeyword(
+        savedMovies,
+        searchSaveValue?.keyword,
+        e.target.checked
+      );
+      setSavedMovies(searchResult);
+    } else {
+      setSavedMovies(savedMovies);
+    }
   }
 
   function handleSearchMoviesByKeyword(movies, keyword, short) {
@@ -174,6 +185,7 @@ export default function App() {
     return foundMovies;
   }
 
+
   function handleSearchSavedMovies(keyword) {
     setLoading(true);
     if (localStorage.getItem("token")) {
@@ -182,6 +194,7 @@ export default function App() {
         .getSavedMovies(token)
         .then((res) => {
           setSavedMovies(res);
+          localStorage.setItem("savedMovies", JSON.stringify(res));
           const searchResult = handleSearchMoviesByKeyword(
             res,
             keyword,
@@ -292,10 +305,12 @@ export default function App() {
         .getSavedMovies(token)
         .then((savedMovies) => {
           setSavedMovies(savedMovies);
+          localStorage.setItem("savedMovies", JSON.stringify(savedMovies));
         })
-        .catch((e) => {});
+        .catch((err) => console.log(`Ошибка ${err}`));
     }
   }, [isLoggedIn]);
+
 
   function closeAllPopups() {
     setIsInfoTooltipPopupOpen(false);
