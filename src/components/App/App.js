@@ -36,8 +36,8 @@ export default function App() {
   const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = useState(false);
   const [filtredMovies, setFilteredMovies] = useState([]);
   const [searchSaveValue, setSearchSaveValue] = useState([]);
-
-
+  const savedMoviesByShort = JSON.parse(localStorage.getItem("savedMovies"));
+ 
   useEffect(() => {
     checkToken();
   }, []);
@@ -157,18 +157,30 @@ export default function App() {
   }
 
   function handleShortSaveMovies(e) {
-    const savedMovies = JSON.parse(localStorage.getItem("savedMovies"));
     setIsShortSaveMovies(e.target.checked);
     if (e.target.checked) {
-      const searchResult = handleSearchMoviesByKeyword(
-        savedMovies,
-        searchSaveValue?.keyword,
+      const searchResult = asd(
+        savedMoviesByShort,
         e.target.checked
       );
       setSavedMovies(searchResult);
     } else {
-      setSavedMovies(savedMovies);
+      setSavedMovies(savedMoviesByShort);
     }
+  }
+
+
+  function asd(movies, short) {
+    let foundMovies = [];
+    movies.forEach((movie) => {
+        if (short) {
+          movie.duration <= 40 && foundMovies.push(movie);
+        } else {
+          foundMovies.push(movie);
+        }
+    });
+    console.log(foundMovies)
+    return foundMovies;
   }
 
   function handleSearchMoviesByKeyword(movies, keyword, short) {
@@ -229,6 +241,7 @@ export default function App() {
         .saveMovie(token, movie)
         .then((newMovie) => {
           setSavedMovies([newMovie, ...savedMovies]);
+          console.log(movie)
         })
         .catch((err) => {
           setInfoMessage(`${err}`);
@@ -238,12 +251,10 @@ export default function App() {
   };
 
   function handleLogOut() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("foundMovies");
-    localStorage.removeItem("searchValue");
-    localStorage.removeItem("isShortMovies");
     localStorage.clear();
     setIsLoggedIn(false);
+    setMovies([])
+    setSavedMovies([])
     history.push("/");
   }
 
@@ -309,7 +320,7 @@ export default function App() {
         })
         .catch((err) => console.log(`Ошибка ${err}`));
     }
-  }, [isLoggedIn]);
+  }, [location]);
 
 
   function closeAllPopups() {
