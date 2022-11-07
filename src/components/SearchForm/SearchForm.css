@@ -22,7 +22,7 @@
 }
 
 .search-form__button {
-  background-color: #4285F4;
+  background-color: #4285f4;
   background-image: url(../../images/form-button.svg);
   background-repeat: no-repeat;
   background-position: center;
@@ -45,3 +45,4 @@
 .search-form__entry:focus {
   border: solid 1.5px #4285f4;
 }
+

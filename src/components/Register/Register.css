@@ -3,6 +3,20 @@
   width: 396px;
 }
 
+.auth-form__btn-submit_disabled {
+  opacity: 0.5;
+}
+
+.auth-form__btn-submit_active {
+  opacity: 1;
+}
+
+.auth-form__btn-submit_active:hover {
+  opacity: 0.8;
+  cursor: pointer;
+  transition: 0.2s ease-out;
+}
+
 .register__form {
   display: flex;
   flex-direction: column;
@@ -30,7 +44,7 @@
   line-height: 12px;
   color: #ee3465;
   min-height: 12px;
-  margin-top: 8px;
+  margin: 4px 0;
 }
 
 .register__error:last-of-type {
@@ -49,6 +63,11 @@
   color: #ffffff;
   outline: none;
 }
+
+.register__input:invalid {
+  color: #EE3465;
+}
+
 
 .register__form-button {
   background: #4285f4;
